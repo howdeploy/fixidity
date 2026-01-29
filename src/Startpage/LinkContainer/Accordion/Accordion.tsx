@@ -1,10 +1,4 @@
-import {
-  MouseEvent,
-  PropsWithChildren,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
+import { MouseEvent, PropsWithChildren, useState } from "react"
 
 import styled from "@emotion/styled"
 
@@ -147,6 +141,16 @@ type groupProps = PropsWithChildren<{
   onMouseDown: (e: MouseEvent) => void
 }>
 
+const getAvailableContentWidth = (element: HTMLElement | null) => {
+  const parent = element?.parentElement
+  if (!parent) return 0
+  const barWidth = [...parent.children].reduce(
+    (width, element) => Math.min(width, (element as HTMLElement).offsetWidth),
+    Infinity
+  )
+  return parent.offsetWidth - parent.children.length * barWidth
+}
+
 export const AccordionGroup = ({
   active,
   title,
@@ -154,19 +158,18 @@ export const AccordionGroup = ({
   onClick,
   onMouseDown,
 }: groupProps) => {
-  const ref = useRef<HTMLDivElement>(null)
   const [contentWidth, setContentWidth] = useState(active ? 500 : 0)
-  useEffect(() => {
-    const parent = ref.current?.parentElement
-    if (parent && active) {
-      setContentWidth(parent.clientWidth - parent.children.length * 113 - 3)
-    } else {
-      setContentWidth(0)
-    }
-  }, [active])
 
   return (
-    <StyledAccordionGroup ref={ref}>
+    <StyledAccordionGroup
+      ref={element => {
+        if (element && active) {
+          setContentWidth(getAvailableContentWidth(element))
+        } else {
+          setContentWidth(0)
+        }
+      }}
+    >
       <AccordionTitleWrapper
         active={active}
         onMouseDown={onMouseDown}
