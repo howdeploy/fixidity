@@ -5,8 +5,6 @@
   "private": true,
   "homepage": "./",
   "scripts": {
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
     "start": "vite",
     "build": "vite build",
     "serve": "vite preview",
@@ -28,7 +26,6 @@
     "@types/react-color": "3.0.13",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "5.1.2",
-    "gh-pages": "4.0.0",
     "typescript": "5.9.3",
     "vite": "7.3.1"
   },
