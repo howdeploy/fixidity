@@ -6,11 +6,13 @@ import { AccordionContainer, AccordionGroup } from "./Accordion/Accordion"
 import * as Settings from "../Settings/settingsHandler"
 
 const LinkItem = styled.a`
-  width: fit-content;
+  max-width: fit-content;
   white-space: nowrap;
   position: relative;
   padding: 10px 0 10px 30px;
   font-size: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   ::before {
     position: absolute;
