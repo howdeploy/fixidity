@@ -207,12 +207,12 @@ export const SettingsWindow = ({ hidePopup }: props) => {
           type="file"
           accept=".json"
           style={{ display: "none" }}
-          onChange={async e => {
+          onChange={e => {
             const file = e.target.files?.[0]
             if (!file) return
-            const ok = await importConfig(file)
-            if (ok) window.location.reload()
-            else alert("Invalid config file")
+            void importConfig(file).then(ok => {
+              if (ok) window.location.reload()
+            })
             e.target.value = ""
           }}
         />

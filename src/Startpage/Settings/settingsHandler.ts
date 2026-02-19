@@ -104,7 +104,12 @@ export const Design = {
     localStorage.setItem("design", JSON.stringify(design)),
 }
 
-const CONFIG_KEYS = ["design", "themes", "link-groups", "search-settings"] as const
+const CONFIG_KEYS = [
+  "design",
+  "themes",
+  "link-groups",
+  "search-settings",
+] as const
 
 export const exportConfig = () => {
   const config: Record<string, unknown> = {}
@@ -128,7 +133,10 @@ export const importConfig = (file: File): Promise<boolean> =>
     const reader = new FileReader()
     reader.onload = () => {
       try {
-        const config = JSON.parse(reader.result as string)
+        const config = JSON.parse(reader.result as string) as Record<
+          string,
+          unknown
+        >
         const hasValidKey = CONFIG_KEYS.some(key => key in config)
         if (!hasValidKey) {
           resolve(false)
