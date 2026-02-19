@@ -51,14 +51,14 @@ It will be deployed on port 8080. (`http:\\localhost:8080`)
 Since this project is programmed with React and TypeScript, you will first need to set it up:
 
 0. (Download and install [nodejs](https://nodejs.org/en/) if you dont have it)
-1. Clone the git repository and use the main branch
+1. Clone the git repository, this time use the main branch
 1. Open a terminal in the project folder (If you execute the command `ls` here, there should be a package.json)
 1. Execute `npm i` to install all dependencies
 1. Execute `npm run start` to validate that everything is working. A browser tab with the URL `http://localhost:5173` and the startpage should open.
 1. Now you can change the code, for example write your own default values into `/src/data/data.ts`
-1. Bundle the project by executing `npm run build` if everything is done
-1. Your startpage is now located in the `/dist/` folder
-1. Optional: If you host it via github pages yourself, you can use the github actions method with the already existing action
+1. Compile the project by executing `npm run build` if everything is done
+1. Your startpage is now located in the `/build/` folder
+1. Optional: If you host it with github pages yourself, you can use the command `npm run deploy` to push a fresh build into the gh-pages branch
 
 ## Sources
 

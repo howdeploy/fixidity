@@ -16,7 +16,6 @@ const Wrapper = styled.div`
 `
 
 const StyledStartpage = styled.div`
-  gap: 100px;
   padding: 0px 100px;
   display: flex;
   flex-direction: row;

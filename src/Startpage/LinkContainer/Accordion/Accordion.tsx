@@ -1,11 +1,17 @@
-import { MouseEvent, PropsWithChildren, useState } from "react"
+import {
+  MouseEvent,
+  PropsWithChildren,
+  useEffect,
+  useRef,
+  useState,
+} from "react"
 
 import styled from "@emotion/styled"
 
 const StyledAccordionContainer = styled.div`
+  margin-left: 100px;
   display: flex;
-  flex: 1;
-  overflow: hidden;
+  width: calc(100% - 400px - 100px);
 `
 
 export const AccordionContainer = ({ children }: PropsWithChildren) => (
@@ -15,7 +21,6 @@ export const AccordionContainer = ({ children }: PropsWithChildren) => (
 const StyledAccordionGroup = styled.div`
   height: 400px;
   display: flex;
-  flex: 1;
   padding: 0 10px;
   flex-direction: row;
   border-right: 3px solid var(--default-color);
@@ -24,9 +29,9 @@ const StyledAccordionGroup = styled.div`
   }
 `
 
-const AccordionContent = styled.div<{ width: number | string | null }>`
+const AccordionContent = styled.div<{ width: number }>`
   height: 100%;
-  width: ${({ width }) => (typeof width !== "number" ? width : `${width}px`)};
+  width: ${({ width }) => `${width}px`};
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -142,18 +147,6 @@ type groupProps = PropsWithChildren<{
   onMouseDown: (e: MouseEvent) => void
 }>
 
-const getAvailableContentWidth = (element: HTMLElement | null) => {
-  const parent = element?.parentElement
-  if (!parent) return 0
-  if (parent.children.length === 1) return "100%"
-  const barWidth = [...parent.children].reduce(
-    (width, element) => Math.min(width, (element as HTMLElement).offsetWidth),
-    Infinity
-  )
-  console.log(barWidth)
-  return parent.offsetWidth - parent.children.length * barWidth
-}
-
 export const AccordionGroup = ({
   active,
   title,
@@ -161,18 +154,19 @@ export const AccordionGroup = ({
   onClick,
   onMouseDown,
 }: groupProps) => {
-  const [contentWidth, setContentWidth] = useState<number | string | null>(null)
+  const ref = useRef<HTMLDivElement>(null)
+  const [contentWidth, setContentWidth] = useState(active ? 500 : 0)
+  useEffect(() => {
+    const parent = ref.current?.parentElement
+    if (parent && active) {
+      setContentWidth(parent.clientWidth - parent.children.length * 113 - 3)
+    } else {
+      setContentWidth(0)
+    }
+  }, [active])
 
   return (
-    <StyledAccordionGroup
-      ref={element => {
-        if (element && active) {
-          setContentWidth(getAvailableContentWidth(element))
-        } else {
-          setContentWidth(0)
-        }
-      }}
-    >
+    <StyledAccordionGroup ref={ref}>
       <AccordionTitleWrapper
         active={active}
         onMouseDown={onMouseDown}
