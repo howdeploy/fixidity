@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 import styled from "@emotion/styled"
 import {
@@ -6,6 +6,8 @@ import {
   faTrash,
   faSave,
   faFire,
+  faDownload,
+  faUpload,
 } from "@fortawesome/free-solid-svg-icons"
 
 import { Changelog } from "./Changelog/Changelog"
@@ -13,6 +15,7 @@ import { DesignSettings } from "./DesignSettings/DesignSettings"
 import { LinkSettings } from "./LinkSettings/LinkSettings"
 import { SearchSettings } from "./SearchSettings/SearchSettings"
 import * as Settings from "./settingsHandler"
+import { exportConfig, importConfig } from "./settingsHandler"
 import { IconButton } from "../../components/IconButton"
 
 const StyledSettingsWindow = styled.div`
@@ -130,6 +133,7 @@ interface props {
 }
 
 export const SettingsWindow = ({ hidePopup }: props) => {
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [currentTab, setCurrentTab] = useState(TabOptions[0])
   const [design, setDesign] = useState(Settings.Design.getWithFallback())
   const [themes, setThemes] = useState(Settings.Themes.getWithFallback())
@@ -192,6 +196,30 @@ export const SettingsWindow = ({ hidePopup }: props) => {
           onClick={() => applyValues()}
           text="Apply Changes"
           icon={faSave}
+        />
+        <SettingsButton
+          onClick={() => exportConfig()}
+          text="Export Config"
+          icon={faDownload}
+        />
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          style={{ display: "none" }}
+          onChange={async e => {
+            const file = e.target.files?.[0]
+            if (!file) return
+            const ok = await importConfig(file)
+            if (ok) window.location.reload()
+            else alert("Invalid config file")
+            e.target.value = ""
+          }}
+        />
+        <SettingsButton
+          onClick={() => fileInputRef.current?.click()}
+          text="Import Config"
+          icon={faUpload}
         />
         <SettingsButton
           onClick={() => {

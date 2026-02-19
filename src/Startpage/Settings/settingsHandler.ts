@@ -103,3 +103,47 @@ export const Design = {
   set: (design: Theme) =>
     localStorage.setItem("design", JSON.stringify(design)),
 }
+
+const CONFIG_KEYS = ["design", "themes", "link-groups", "search-settings"] as const
+
+export const exportConfig = () => {
+  const config: Record<string, unknown> = {}
+  for (const key of CONFIG_KEYS) {
+    const value = localStorage.getItem(key)
+    if (value) config[key] = JSON.parse(value)
+  }
+  const blob = new Blob([JSON.stringify(config, null, 2)], {
+    type: "application/json",
+  })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = "fixidity-config.json"
+  a.click()
+  URL.revokeObjectURL(url)
+}
+
+export const importConfig = (file: File): Promise<boolean> =>
+  new Promise(resolve => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      try {
+        const config = JSON.parse(reader.result as string)
+        const hasValidKey = CONFIG_KEYS.some(key => key in config)
+        if (!hasValidKey) {
+          resolve(false)
+          return
+        }
+        for (const key of CONFIG_KEYS) {
+          if (key in config) {
+            localStorage.setItem(key, JSON.stringify(config[key]))
+          }
+        }
+        resolve(true)
+      } catch {
+        resolve(false)
+      }
+    }
+    reader.onerror = () => resolve(false)
+    reader.readAsText(file)
+  })
