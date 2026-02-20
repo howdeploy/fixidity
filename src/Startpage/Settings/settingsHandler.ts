@@ -104,6 +104,36 @@ export const Design = {
     localStorage.setItem("design", JSON.stringify(design)),
 }
 
+export interface RecentSite {
+  label: string
+  url: string
+  timestamp: number
+}
+
+const RECENT_KEY = "recent-sites"
+const MAX_RECENT = 5
+
+export const RecentSites = {
+  get: (): RecentSite[] => {
+    try {
+      const raw = localStorage.getItem(RECENT_KEY)
+      if (raw) return JSON.parse(raw) as RecentSite[]
+    } catch {
+      // ignore corrupted data
+    }
+    return []
+  },
+
+  add: (url: string) => {
+    const label =
+      new URL(url).hostname.replace("www.", "") +
+      (new URL(url).pathname !== "/" ? new URL(url).pathname : "")
+    const sites = RecentSites.get().filter(s => s.url !== url)
+    sites.unshift({ label, url, timestamp: Date.now() })
+    localStorage.setItem(RECENT_KEY, JSON.stringify(sites.slice(0, MAX_RECENT)))
+  },
+}
+
 const CONFIG_KEYS = [
   "design",
   "themes",
@@ -115,7 +145,12 @@ export const exportConfig = () => {
   const config: Record<string, unknown> = {}
   for (const key of CONFIG_KEYS) {
     const value = localStorage.getItem(key)
-    if (value) config[key] = JSON.parse(value)
+    if (!value) continue
+    try {
+      config[key] = JSON.parse(value)
+    } catch {
+      // skip corrupted entry
+    }
   }
   const blob = new Blob([JSON.stringify(config, null, 2)], {
     type: "application/json",

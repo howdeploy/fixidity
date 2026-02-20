@@ -105,7 +105,7 @@ const AccordionTitleWrapper = styled.button<{ active: boolean }>`
       from {
         transform: rotate(0deg);
       }
-      from {
+      to {
         transform: rotate(360deg);
       }
     }
@@ -158,11 +158,20 @@ export const AccordionGroup = ({
   const [contentWidth, setContentWidth] = useState(active ? 500 : 0)
   useEffect(() => {
     const parent = ref.current?.parentElement
-    if (parent && active) {
-      setContentWidth(parent.clientWidth - parent.children.length * 113 - 3)
-    } else {
-      setContentWidth(0)
+    if (!parent) return
+
+    const update = () => {
+      if (active) {
+        setContentWidth(parent.clientWidth - parent.children.length * 113 - 3)
+      } else {
+        setContentWidth(0)
+      }
     }
+
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(parent)
+    return () => ro.disconnect()
   }, [active])
 
   return (

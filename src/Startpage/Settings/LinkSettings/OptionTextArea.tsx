@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import styled from "@emotion/styled"
 
@@ -64,38 +64,13 @@ interface props {
   onChange: (value: linkGroup[]) => void
 }
 
-const getLinksAsString = (): string => {
-  // try to do usual parse
-  try {
-    const parseLinks = localStorage.getItem("link-groups")
-    if (parseLinks)
-      return JSON.stringify(Settings.Links.parse(parseLinks), null, 2)
-    // eslint-disable-next-line no-empty
-  } catch {}
-
-  // try to parse broken json
-  const links = Settings.Links.getRaw()
-  if (links) {
-    return links
-      .replaceAll(":[{", ":[\n      {\n")
-      .replaceAll('[{"', '[\n  {\n"')
-      .replaceAll("}]}]", "}]\n  }\n]")
-      .replaceAll("]},{", "\n  },\n  {\n")
-      .replaceAll("},{", "\n      },\n      {\n")
-      .replaceAll('"}]', '"\n      }\n    ]')
-      .replaceAll('"title":', '    "title":')
-      .replaceAll('"links":', '\n    "links":')
-      .replaceAll('"label":', '        "label":')
-      .replaceAll('"value":', '\n        "value":')
-  }
-
-  //Last possible option
-  return JSON.stringify(Settings.Links.getWithFallback(), null, 2)
-}
-
-export const OptionTextArea = ({ onChange }: props) => {
+export const OptionTextArea = ({ onChange, initialValue }: props) => {
   const [error, setError] = useState<string | undefined>(undefined)
-  const [value, setValue] = useState(getLinksAsString())
+  const [value, setValue] = useState(JSON.stringify(initialValue, null, 2))
+
+  useEffect(() => {
+    setValue(JSON.stringify(initialValue, null, 2))
+  }, [initialValue])
 
   const tryOnChangeEvent = (linkGroups: string) => {
     setValue(linkGroups)

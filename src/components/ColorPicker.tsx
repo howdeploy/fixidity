@@ -1,9 +1,9 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 import styled from "@emotion/styled"
 import { MaterialPicker, ColorResult } from "react-color"
 
-import { themes as defaultThemes, colorsType } from "../data/data"
+import { colorsType } from "../data/data"
 
 const ColorPickerContainer = styled.div`
   display: flex;
@@ -45,14 +45,16 @@ interface props {
 }
 
 export const ColorPicker = ({ colors, setColors }: props) => {
-  const [currentColor, setCurrentColor] = useState(
-    Object.keys(defaultThemes[0]?.colors ?? {})[0] ?? ""
-  )
+  const [currentColor, setCurrentColor] = useState(Object.keys(colors)[0] ?? "")
+
+  useEffect(() => {
+    if (!colors[currentColor]) {
+      setCurrentColor(Object.keys(colors)[0] ?? "")
+    }
+  }, [colors, currentColor])
 
   const handleChange = (result: ColorResult) => {
-    const tmp = { ...colors }
-    tmp[currentColor] = result.hex
-    setColors(tmp)
+    setColors({ ...colors, [currentColor]: result.hex })
   }
 
   return (
@@ -69,7 +71,10 @@ export const ColorPicker = ({ colors, setColors }: props) => {
         ))}
       </div>
       <StyledMaterialPicker>
-        <MaterialPicker color={colors[currentColor]} onChange={handleChange} />
+        <MaterialPicker
+          color={colors[currentColor] ?? "#000000"}
+          onChange={handleChange}
+        />
       </StyledMaterialPicker>
     </ColorPickerContainer>
   )

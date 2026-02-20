@@ -66,13 +66,17 @@ export const Searchbar = () => {
   else if (engine.includes("ecosia")) searchSymbol = ecosia
 
   const redirectToSearch = (query: string) => {
-    if (searchSettings.fastForward[query])
-      window.location.href = searchSettings.fastForward[query]
-    else {
+    const trimmed = query.trim()
+    if (!trimmed) return
+    if (searchSettings.fastForward[trimmed]) {
+      Settings.RecentSites.add(searchSettings.fastForward[trimmed])
+      window.location.href = searchSettings.fastForward[trimmed]
+    } else {
+      const encoded = encodeURIComponent(trimmed)
       // for compatibility with old engine urls before fluidity 0.5.0
       if (!engine.includes(queryToken))
-        window.location.href = "https://" + engine + "?q=" + query
-      else window.location.href = engine.replace(queryToken, query)
+        window.location.href = "https://" + engine + "?q=" + encoded
+      else window.location.href = engine.replace(queryToken, encoded)
     }
   }
 

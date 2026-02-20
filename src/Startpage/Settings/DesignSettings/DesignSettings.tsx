@@ -131,7 +131,7 @@ const StyledAccordionPreview = styled.div<{ colorVar: string }>`
       from {
         transform: rotate(0deg);
       }
-      from {
+      to {
         transform: rotate(360deg);
       }
     }
@@ -230,8 +230,9 @@ export const DesignSettings = ({
   }
 
   const removeTheme = (themeName: string) => {
-    setThemes(themes.filter(theme => theme.name !== themeName))
-    if (themes.length > 0) themeChange(themes[0]?.name ?? "")
+    const newThemes = themes.filter(theme => theme.name !== themeName)
+    setThemes(newThemes)
+    if (newThemes.length > 0) setDesign(newThemes[0]!)
   }
 
   const themeExists = (themeName: string) =>

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 
 import styled from "@emotion/styled"
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons"
@@ -73,10 +73,26 @@ interface props {
 
 export const Dropdown = ({ items, onChange, value }: props) => {
   const [popupHeight, setPopupHeight] = useState(0)
-  const [hasBlur, setHasBlur] = useState(false)
-  const measureRef = useCallback((elem: HTMLDivElement | null) => {
-    if (elem) setPopupHeight(elem.clientHeight)
-  }, [items.length])
+  const [isOpen, setIsOpen] = useState(false)
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const measureRef = useCallback(
+    (elem: HTMLDivElement | null) => {
+      if (elem) setPopupHeight(elem.clientHeight)
+    },
+    [items.length]
+  )
+
+  useEffect(() => {
+    if (!isOpen) return
+    const handler = (e: MouseEvent) => {
+      if (!wrapperRef.current?.contains(e.target as Node)) {
+        setIsOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handler)
+    return () => document.removeEventListener("mousedown", handler)
+  }, [isOpen])
+
   const getCurrentLabel = () => {
     const current = items.filter(item => item.value === value)
     if (current.length > 0) return current[0]?.label
@@ -85,21 +101,18 @@ export const Dropdown = ({ items, onChange, value }: props) => {
 
   const handleChange = (value: string) => {
     onChange(value)
-    setHasBlur(false)
+    setIsOpen(false)
   }
 
   return (
-    <DropdownWrapper>
+    <DropdownWrapper ref={wrapperRef}>
       <DropdownButton
         text={getCurrentLabel()}
         icon={faAngleDown}
-        onClick={() => setHasBlur(!hasBlur)}
+        onClick={() => setIsOpen(!isOpen)}
       ></DropdownButton>
-      <DropdownPopup height={hasBlur ? popupHeight : 0} items={items.length}>
-        <div
-          onBlur={() => setHasBlur(false)}
-          ref={measureRef}
-        >
+      <DropdownPopup height={isOpen ? popupHeight : 0} items={items.length}>
+        <div ref={measureRef}>
           {items.map(item => (
             <DropdownItem
               onClick={() => handleChange(item.value)}
