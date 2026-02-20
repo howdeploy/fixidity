@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useCallback, useState } from "react"
 
 import styled from "@emotion/styled"
 import { faAngleDown } from "@fortawesome/free-solid-svg-icons"
@@ -44,7 +44,6 @@ const DropdownPopup = styled.div<{ height: number; items: number }>`
   background-color: var(--bg-color);
   overflow: hidden;
   z-index: 9;
-  animation: box-flicker 0.01s ease 0s infinite alternate;
   transition: ${({ items }) => `${items * 0.1}s`};
   > div {
     padding-top: 5px;
@@ -75,6 +74,9 @@ interface props {
 export const Dropdown = ({ items, onChange, value }: props) => {
   const [popupHeight, setPopupHeight] = useState(0)
   const [hasBlur, setHasBlur] = useState(false)
+  const measureRef = useCallback((elem: HTMLDivElement | null) => {
+    if (elem) setPopupHeight(elem.clientHeight)
+  }, [items.length])
   const getCurrentLabel = () => {
     const current = items.filter(item => item.value === value)
     if (current.length > 0) return current[0]?.label
@@ -96,7 +98,7 @@ export const Dropdown = ({ items, onChange, value }: props) => {
       <DropdownPopup height={hasBlur ? popupHeight : 0} items={items.length}>
         <div
           onBlur={() => setHasBlur(false)}
-          ref={elem => setPopupHeight(elem?.clientHeight || 0)}
+          ref={measureRef}
         >
           {items.map(item => (
             <DropdownItem
