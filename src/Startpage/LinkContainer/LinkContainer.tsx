@@ -88,15 +88,15 @@ export const LinkContainer = () => {
           ))}
         </AccordionGroup>
       ))}
-      {recentSites.length > 0 && (
-        <AccordionGroup
-          key="__recent__"
-          active={active === recentIndex}
-          title="Недавнее"
-          onClick={() => setActive(recentIndex)}
-          onMouseDown={e => middleMouseHandler(e, recentIndex)}
-        >
-          {recentSites.map(site => (
+      <AccordionGroup
+        key="__recent__"
+        active={active === recentIndex}
+        title="Recent"
+        onClick={() => setActive(recentIndex)}
+        onMouseDown={e => middleMouseHandler(e, recentIndex)}
+      >
+        {recentSites.length > 0 ? (
+          recentSites.map(site => (
             <RecentLinkItem
               tabIndex={active !== recentIndex ? -1 : undefined}
               key={site.url + site.timestamp}
@@ -104,9 +104,13 @@ export const LinkContainer = () => {
             >
               {site.label}
             </RecentLinkItem>
-          ))}
-        </AccordionGroup>
-      )}
+          ))
+        ) : (
+          <RecentLinkItem as="span" tabIndex={-1}>
+            No recent sites
+          </RecentLinkItem>
+        )}
+      </AccordionGroup>
     </AccordionContainer>
   )
 }
