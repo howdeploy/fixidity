@@ -48,7 +48,11 @@ const SearchIcon = styled.div<{ src: string }>`
   background: var(--default-color);
 
   mask-size: cover;
-  mask-image: url(${({ src }) => src});
+  -webkit-mask-size: cover;
+  mask-image: url("${({ src }) => src}");
+  -webkit-mask-image: url("${({ src }) => src}");
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
 `
 
 export const Searchbar = () => {
