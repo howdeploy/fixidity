@@ -134,11 +134,24 @@ export const RecentSites = {
   },
 }
 
+export const RecentTitle = {
+  get: (): string => {
+    try {
+      const raw = localStorage.getItem("recent-title")
+      if (raw) return JSON.parse(raw) as string
+    } catch {
+      // ignore corrupted data
+    }
+    return "Recent"
+  },
+}
+
 const CONFIG_KEYS = [
   "design",
   "themes",
   "link-groups",
   "search-settings",
+  "recent-title",
 ] as const
 
 export const exportConfig = () => {

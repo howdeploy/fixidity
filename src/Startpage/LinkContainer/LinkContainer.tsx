@@ -91,7 +91,7 @@ export const LinkContainer = () => {
       <AccordionGroup
         key="__recent__"
         active={active === recentIndex}
-        title="Recent"
+        title={Settings.RecentTitle.get()}
         onClick={() => setActive(recentIndex)}
         onMouseDown={e => middleMouseHandler(e, recentIndex)}
       >
